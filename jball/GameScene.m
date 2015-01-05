@@ -10,8 +10,19 @@
 
 @implementation GameScene
 
+- (instancetype)initWithSize:(CGSize)size {
+    self = [super initWithSize:size];
+    if (self) {
+        <#statements#>
+    }
+    return self;
+}
 -(void)didMoveToView:(SKView *)view {
     /* Setup your scene here */
+    self.physicsWorld.gravity = CGVectorMake(0, 0);
+    self.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:self.frame];
+    self.physicsBody.categoryBitMask = SceneEdgeCategory;
+
     SKLabelNode *myLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     
     myLabel.text = @"Hello, World!";
@@ -28,15 +39,17 @@
     for (UITouch *touch in touches) {
         CGPoint location = [touch locationInNode:self];
         
-        SKSpriteNode *sprite = [SKSpriteNode spriteNodeWithImageNamed:@"Spaceship"];
+        SKSpriteNode *sprite = [[SKSpriteNode alloc] initWithImageNamed:@"ball"];
         
         sprite.xScale = 0.5;
         sprite.yScale = 0.5;
         sprite.position = location;
-        
-        SKAction *action = [SKAction rotateByAngle:M_PI duration:1];
-        
-        [sprite runAction:[SKAction repeatActionForever:action]];
+        SKPhysicsBody *physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:self.frame];
+        physicsBody.velocity = CGVectorMake(20, 20);
+        [physicsBody applyForce:CGVectorMake(rand(), rand())];
+        physicsBody.friction = 0.0f; //Don't slow down after hitting the edge of the screen
+        physicsBody.linearDamping = 0.0f; //Don't slow down!
+        sprite.physicsBody = physicsBody;
         
         [self addChild:sprite];
     }
